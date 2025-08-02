@@ -18,11 +18,11 @@ public partial class Player : CharacterBody3D
 	[Export]
 	float speed { get; set; } = 0.7f;
 	[Export]
-	float turnCircumference { get; set; } = 20f;
+	float turnRadius { get; set; } = 20f;
 	private PlayerController controller;
 	public override void _Ready()
 	{
-		controller = new(this, camera, cameraOffset, cameraZoom, gravityStrength, speed, turnCircumference);
+		controller = new(this, camera, cameraOffset, cameraZoom, gravityStrength, speed, turnRadius);
 		controller._Ready();
 	}
 	public override void _Process(double delta)

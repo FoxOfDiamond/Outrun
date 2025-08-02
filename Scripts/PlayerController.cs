@@ -15,8 +15,8 @@ public class PlayerController
 	private bool drifting = false;
 	private float baseSpeed = 0.7f;
 	private float speed;
-	private float baseTurnCircumference = 20;
-	private float turnCircumference = 20;
+	private float baseTurnRadius = 20;
+	private float turnRadius = 20;
 	private float turnSpeed;
 	private Vector3 angularVelocity = new();
 	private Vector3 gravity;
@@ -32,7 +32,7 @@ public class PlayerController
 		[Key.C] = false,
 		[Key.Space] = false
 	};
-    public PlayerController(Player _player, Camera3D _camera, Vector3 _cameraOffset, float _cameraZoom, float _gravityStrength, float _speed, float _turnCircumference)
+    public PlayerController(Player _player, Camera3D _camera, Vector3 _cameraOffset, float _cameraZoom, float _gravityStrength, float _speed, float _turnRadius)
     {
         player = _player;
         camera = _camera;
@@ -40,7 +40,7 @@ public class PlayerController
         cameraZoom = _cameraZoom;
         gravityStrength = _gravityStrength;
         baseSpeed = _speed;
-        baseTurnCircumference = _turnCircumference;
+        baseTurnRadius = _turnRadius;
     }
 
     public void _Ready()
@@ -48,7 +48,7 @@ public class PlayerController
         Input.MouseMode = Input.MouseModeEnum.Captured;
         gravity = gravityStrength * (Vector3)ProjectSettings.GetSetting("physics/3d/default_gravity_vector");
         speed = baseSpeed;
-        turnCircumference = baseTurnCircumference;
+        turnRadius = baseTurnRadius;
 
     }
 	public void _Process(double delta)
@@ -83,17 +83,17 @@ public class PlayerController
             {
                 drifting = false;
             }
-            turnCircumference = baseTurnCircumference * 0.7f;
+            turnRadius = baseTurnRadius * 0.7f;
         }
         else
         {
-            turnCircumference = baseTurnCircumference;
+            turnRadius = baseTurnRadius;
 		}
-		turnSpeed = player.Velocity.Length() / (turnCircumference / 360);
+		turnSpeed = player.Velocity.Length() / (Mathf.Pow(turnRadius,2) * Mathf.Pi / 360) / (60);
 		if (Inputs[Key.A])
-		{
-			angularVelocity = new Vector3(0, turnSpeed, 0);
-		}
+        {
+            angularVelocity = new Vector3(0, turnSpeed, 0);
+        }
 		if (Inputs[Key.D])
 		{
 			angularVelocity = new Vector3(0,-turnSpeed,0);
