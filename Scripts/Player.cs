@@ -16,13 +16,15 @@ public partial class Player : CharacterBody3D
 	[Export]
 	float gravityStrength { get; set; } = 9.8f;
 	[Export]
-	float speed { get; set; } = 0.7f;
+	float speed { get; set; } = 1f;
 	[Export]
-	float turnRadius { get; set; } = 20f;
+	float turnRadius { get; set; } = 100f;
+	[Export]
+	float friction { get; set; } = 0.98f;
 	private PlayerController controller;
 	public override void _Ready()
 	{
-		controller = new(this, camera, cameraOffset, cameraZoom, gravityStrength, speed, turnRadius);
+		controller = new(this, camera, cameraOffset, cameraZoom, gravityStrength, speed, turnRadius, friction);
 		controller._Ready();
 	}
 	public override void _Process(double delta)

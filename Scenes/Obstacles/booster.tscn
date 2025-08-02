@@ -1,0 +1,52 @@
+[gd_scene load_steps=8 format=3 uid="uid://c6p64xaqyula"]
+
+[ext_resource type="Script" uid="uid://dsvv5h7t333m7" path="res://Scripts/Obstacles/Booster.cs" id="1_buvji"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mvk8p"]
+points = PackedVector3Array(1, -0.5, 1, -1, -0.5, 1, -1, 0.5, -1, 1, 0.5, -1, 1, -0.5, -1, -1, -0.5, -1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_buvji"]
+albedo_color = Color(0, 1, 0, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_mvk8p"]
+material = SubResource("StandardMaterial3D_buvji")
+left_to_right = 1.0
+size = Vector3(2, 1, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eixec"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_ndgag"]
+material = SubResource("StandardMaterial3D_eixec")
+left_to_right = 1.0
+size = Vector3(2, 1, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_buvji"]
+size = Vector3(1.8, 1.5, 1.8)
+
+[node name="Booster" type="Node3D"]
+script = ExtResource("1_buvji")
+metadata/_custom_type_script = "uid://c6tt1okbmgprn"
+
+[node name="Body" type="RigidBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_mvk8p")
+
+[node name="Mesh" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(-2.18557e-07, 0, 5, 0, 5, 0, -5, 0, -2.18557e-07, 0, 0, 0)
+mesh = SubResource("PrismMesh_mvk8p")
+
+[node name="Mesh2" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(-2.18557e-07, 0, 5, 0, 5, 0, -5, 0, -2.18557e-07, 0, 0, 0)
+visible = false
+mesh = SubResource("PrismMesh_ndgag")
+
+[node name="Detector" type="Area3D" parent="Body"]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body/Detector"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 1.25, 0)
+shape = SubResource("BoxShape3D_buvji")

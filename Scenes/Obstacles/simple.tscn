@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dsrtg0hfbb6du"]
+
+[ext_resource type="Script" uid="uid://gwxsxicc02yb" path="res://Scripts/Obstacles/Simple.cs" id="1_fq635"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0xm2m"]
+size = Vector3(5, 10, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7dm0k"]
+
+[node name="Simple" type="Node3D"]
+script = ExtResource("1_fq635")
+metadata/_custom_type_script = "uid://gwxsxicc02yb"
+
+[node name="Body" type="RigidBody3D" parent="."]
+
+[node name="Hitbox" type="CollisionShape3D" parent="Body"]
+shape = SubResource("BoxShape3D_0xm2m")
+
+[node name="Mesh" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(5, 0, 0, 0, 10, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("BoxMesh_7dm0k")
+skeleton = NodePath("")

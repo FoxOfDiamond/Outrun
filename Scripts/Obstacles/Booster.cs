@@ -1,0 +1,50 @@
+using Godot;
+using System;
+
+namespace Outrun;
+
+public partial class Booster : Obstacle
+{
+	private RigidBody3D _body;
+	public override Node3D body { get => _body; set => _body = (RigidBody3D)value; }
+
+	private MeshInstance3D mesh, mesh2;
+
+	public bool helping = true;
+
+	public Area3D detector { get; set; }
+
+	public override void _Ready()
+	{
+		detector = body.GetNode<Area3D>("Detector");
+		mesh = body.GetNode<MeshInstance3D>("Mesh");
+		mesh2 = body.GetNode<MeshInstance3D>("Mesh2");
+
+		detector.AreaEntered += OnAreaEntered;
+		detector.AreaExited += OnAreaExited;
+	}
+
+	public void OnAreaEntered(Area3D area)
+	{
+		var target = area.GetParent<Player>();
+		if (helping)
+		{
+			target.Velocity *= 5f;
+		}
+		else
+		{
+			target.Velocity *= 0.1f;
+		}
+		
+	}
+
+	public void OnAreaExited(Area3D area)
+	{
+		if (helping)
+		{
+			mesh.Visible = false;
+			mesh2.Visible = true;
+			helping = false;
+		}
+	}
+}
