@@ -67,16 +67,16 @@ public class PlayerController
 		}
 		camera.Position = player.Position + camera.GlobalBasis.Z * cameraZoom + camera.GlobalBasis.Z * cameraOffset.Z + camera.GlobalBasis.X * cameraOffset.X + camera.GlobalBasis.Y * cameraOffset.Y;
 	}
-	public void _PhysicsProcess(double delta)
-	{
-		if (Inputs[Key.W])
-		{
-			player.Velocity -= player.GlobalBasis.Z * speed;
-		}
-		if (Inputs[Key.S])
-		{
-			player.Velocity += player.GlobalBasis.Z * speed;
-		}
+    public void _PhysicsProcess(double delta)
+    {
+        if (Inputs[Key.W])
+        {
+            player.Velocity -= player.GlobalBasis.Z * speed;
+        }
+        if (Inputs[Key.S])
+        {
+            player.Velocity += player.GlobalBasis.Z * speed;
+        }
         if (drifting)
         {
             if (Mathf.Abs(angularVelocity.Y) < 3)
@@ -88,21 +88,32 @@ public class PlayerController
         else
         {
             turnRadius = baseTurnRadius;
-		}
-		turnSpeed = player.Velocity.Length() / (Mathf.Pow(turnRadius,2) * Mathf.Pi / 360) / (60);
-		if (Inputs[Key.A])
+        }
+        turnSpeed = player.Velocity.Length() / (Mathf.Pow(turnRadius, 2) * Mathf.Pi / 360) / (60);
+        if (Inputs[Key.A])
         {
             angularVelocity = new Vector3(0, turnSpeed, 0);
         }
-		if (Inputs[Key.D])
-		{
-			angularVelocity = new Vector3(0,-turnSpeed,0);
-		}
-		player.RotationDegrees += angularVelocity;
-		angularVelocity *= 0.9f;
-		player.Velocity += gravity * 0.1f;
-		player.Velocity *= 0.95f;
-		player.MoveAndSlide();
+        if (Inputs[Key.D])
+        {
+            angularVelocity = new Vector3(0, -turnSpeed, 0);
+        }
+        player.RotationDegrees += angularVelocity;
+        angularVelocity *= 0.9f;
+        player.Velocity += gravity * 0.1f;
+        player.Velocity *= 0.95f;
+        player.MoveAndSlide();
+
+        //Handles pushables
+        KinematicCollision3D collision = player.GetLastSlideCollision();
+        if (collision.GetCollider() is Obstacle)
+        { 
+            Obstacle instance = (Obstacle)collision.GetCollider();
+            if (instance.pushable)
+            {
+                
+            }
+        }
 	}
 	public void _Input(InputEvent @event)
 	{

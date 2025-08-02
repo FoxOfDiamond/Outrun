@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://csdj28cruj81w"]
+[gd_scene load_steps=8 format=3 uid="uid://csdj28cruj81w"]
 
 [ext_resource type="Script" uid="uid://b64scxry8hdfu" path="res://Scripts/Player.cs" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://gwxsxicc02yb" path="res://Scripts/Obstacles/Simple.cs" id="2_0xm2m"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ig7tw"]
 size = Vector3(100, 2, 100)
@@ -55,18 +56,17 @@ surface_material_override/0 = SubResource("StandardMaterial3D_7dm0k")
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.72762, 15.578, 24.3243)
 
-[node name="Wall" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.9492, 5.26808, 0)
-axis_lock_linear_x = true
-axis_lock_linear_y = true
-axis_lock_linear_z = true
-axis_lock_angular_x = true
-axis_lock_angular_y = true
-axis_lock_angular_z = true
+[node name="Simple" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.52892, -9.47119)
+script = ExtResource("2_0xm2m")
+metadata/_custom_type_script = "uid://gwxsxicc02yb"
 
-[node name="Hitbox" type="CollisionShape3D" parent="Wall"]
+[node name="Body" type="RigidBody3D" parent="Simple"]
+
+[node name="Hitbox" type="CollisionShape3D" parent="Simple/Body"]
 shape = SubResource("BoxShape3D_0xm2m")
 
-[node name="Mesh" type="MeshInstance3D" parent="Wall"]
+[node name="Mesh" type="MeshInstance3D" parent="Simple/Body"]
 transform = Transform3D(5, 0, 0, 0, 10, 0, 0, 0, 5, 0, 0, 0)
 mesh = SubResource("BoxMesh_7dm0k")
+skeleton = NodePath("")
