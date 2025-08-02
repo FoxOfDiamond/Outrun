@@ -29,11 +29,11 @@ public partial class Booster : Obstacle
 		var target = area.GetParent<Player>();
 		if (helping)
 		{
-			target.Velocity *= 5f;
+			target.Velocity *= new Vector3(5, 0, 5);
 		}
 		else
 		{
-			target.Velocity *= 0.1f;
+			target.Velocity *= new Vector3(-5, 0, -5);
 		}
 		
 	}
