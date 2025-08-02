@@ -1,8 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://csdj28cruj81w"]
+[gd_scene load_steps=13 format=3 uid="uid://csdj28cruj81w"]
 
 [ext_resource type="Script" uid="uid://b64scxry8hdfu" path="res://Scripts/Player.cs" id="1_bo1nx"]
-[ext_resource type="PackedScene" uid="uid://dsrtg0hfbb6du" path="res://Scenes/Obstacles/simple.tscn" id="2_8gbba"]
 [ext_resource type="PackedScene" uid="uid://c6p64xaqyula" path="res://Scenes/Obstacles/booster.tscn" id="2_jjvhh"]
+[ext_resource type="Script" uid="uid://cmpwlsjd6ds51" path="res://Scripts/Obstacles/Pushable.cs" id="3_8gbba"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -28,6 +28,11 @@ size = Vector3(4, 2, 5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7dm0k"]
 albedo_color = Color(0.972549, 0.14902, 0.121569, 0.298039)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jjvhh"]
+size = Vector3(5, 10, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kry3j"]
 
 [node name="Node3D" type="Node3D"]
 
@@ -56,7 +61,8 @@ mesh = SubResource("BoxMesh_7dm0k")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 script = ExtResource("1_bo1nx")
 camera = NodePath("../Camera")
-turnRadius = 5.0
+cameraSmoothing = 1.0
+turnRadius = 10.0
 
 [node name="Detector" type="Area3D" parent="Player"]
 collision_layer = 2
@@ -81,5 +87,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.72762, 15.578, 24.3243)
 [node name="Booster" parent="." instance=ExtResource("2_jjvhh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 3.5, 0)
 
-[node name="Simple" parent="." instance=ExtResource("2_8gbba")]
+[node name="Pushable" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.52892, -9.47119)
+script = ExtResource("3_8gbba")
+metadata/_custom_type_script = "uid://cmpwlsjd6ds51"
+
+[node name="Body" type="RigidBody3D" parent="Pushable"]
+
+[node name="Hitbox" type="CollisionShape3D" parent="Pushable/Body"]
+shape = SubResource("BoxShape3D_jjvhh")
+
+[node name="Mesh" type="MeshInstance3D" parent="Pushable/Body"]
+transform = Transform3D(5, 0, 0, 0, 10, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("BoxMesh_kry3j")
+skeleton = NodePath("")

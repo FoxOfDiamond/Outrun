@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using Godot.Collections;
 
@@ -5,7 +6,7 @@ namespace Outrun;
 
 public class PlayerController
 {
-    public Player player;
+	public Player player;
 	public Camera3D camera;
 	private Vector3 cameraOffset = new(0,4,0);
 	private Vector3 cameraRotationalOffset = new(-20,0,0);
@@ -22,6 +23,8 @@ public class PlayerController
 	private Vector3 gravity;
 	private float gravityStrength;
 	private float friction;
+	private float cameraSmoothing;
+	private float mass = 1000;
 	private readonly Dictionary<Key, bool> Inputs = new()
 	{
 		[Key.W] = false,
@@ -33,7 +36,7 @@ public class PlayerController
 		[Key.C] = false,
 		[Key.Space] = false
 	};
-	public PlayerController(Player _player, Camera3D _camera, Vector3 _cameraOffset, float _cameraZoom, float _gravityStrength, float _speed, float _turnRadius, float _friction)
+	public PlayerController(Player _player, Camera3D _camera, Vector3 _cameraOffset, float _cameraZoom, float _gravityStrength, float _speed, float _turnRadius, float _friction, float _cameraSmoothing)
 	{
 		player = _player;
 		camera = _camera;
@@ -43,23 +46,24 @@ public class PlayerController
 		baseSpeed = _speed;
 		baseTurnRadius = _turnRadius;
 		friction = _friction;
-    }
+		cameraSmoothing = _cameraSmoothing;
+	}
 
-    public void _Ready()
-    {
-        Input.MouseMode = Input.MouseModeEnum.Captured;
-        gravity = gravityStrength * (Vector3)ProjectSettings.GetSetting("physics/3d/default_gravity_vector");
-        speed = baseSpeed;
-        turnRadius = baseTurnRadius;
+	public void _Ready()
+	{
+		Input.MouseMode = Input.MouseModeEnum.Captured;
+		gravity = gravityStrength * (Vector3)ProjectSettings.GetSetting("physics/3d/default_gravity_vector");
+		speed = baseSpeed;
+		turnRadius = baseTurnRadius;
 
-    }
+	}
 	public void _Process(double delta)
 	{
 		if (mouseLocked && !freelook)
 		{
 			if (drifting)
 			{
-				camera.RotationDegrees = camera.RotationDegrees.LerpAngleDeg(player.RotationDegrees + cameraRotationalOffset + new Vector3(0, angularVelocity.Y > 0 ? -15 : 15, 0), 0.2f);
+				camera.RotationDegrees = camera.RotationDegrees.LerpAngleDeg(player.RotationDegrees + cameraRotationalOffset + new Vector3(0, angularVelocity.Y > 0 ? -15 : 15, 0), cameraSmoothing);
 
 			}
 			else
@@ -67,55 +71,68 @@ public class PlayerController
 				camera.RotationDegrees = camera.RotationDegrees.LerpAngleDeg(player.RotationDegrees + cameraRotationalOffset, 0.2f);
 			}
 		}
-		camera.Position = camera.Position.Lerp(player.Position + camera.GlobalBasis.Z * cameraZoom + camera.GlobalBasis.Z * cameraOffset.Z + camera.GlobalBasis.X * cameraOffset.X + camera.GlobalBasis.Y * cameraOffset.Y, 0.2f);
+		camera.Position = camera.Position.Lerp(player.Position + camera.GlobalBasis.Z * cameraZoom + camera.GlobalBasis.Z * cameraOffset.Z + camera.GlobalBasis.X * cameraOffset.X + camera.GlobalBasis.Y * cameraOffset.Y, cameraSmoothing);
 	}
-    public void _PhysicsProcess(double delta)
-    {
-        if (Inputs[Key.W])
-        {
-            player.Velocity -= player.GlobalBasis.Z * speed;
-        }
-        if (Inputs[Key.S])
-        {
-            player.Velocity += player.GlobalBasis.Z * speed;
-        }
-        if (drifting)
-        {
-            if (Mathf.Abs(angularVelocity.Y) < 3)
-            {
-                drifting = false;
-            }
-            turnRadius = baseTurnRadius * 0.7f;
-        }
-        else
-        {
-            turnRadius = baseTurnRadius;
-        }
-        turnSpeed = player.Velocity.Length() / (Mathf.Pow(turnRadius, 2) * Mathf.Pi / 360) / (60);
-        if (Inputs[Key.A])
-        {
-            angularVelocity = new Vector3(0, turnSpeed, 0);
-        }
-        if (Inputs[Key.D])
-        {
-            angularVelocity = new Vector3(0, -turnSpeed, 0);
-        }
-        player.RotationDegrees += angularVelocity;
+	public void _PhysicsProcess(double delta)
+	{
+		if (Inputs[Key.W])
+		{
+			player.Velocity -= player.GlobalBasis.Z * speed;
+		}
+		if (Inputs[Key.S])
+		{
+			player.Velocity += player.GlobalBasis.Z * speed;
+		}
+		if (drifting)
+		{
+			if (Mathf.Abs(angularVelocity.Y) < 3)
+			{
+				drifting = false;
+			}
+			turnRadius = baseTurnRadius * 0.7f;
+		}
+		else
+		{
+			turnRadius = baseTurnRadius;
+		}
+		turnSpeed = player.Velocity.Length() / (Mathf.Pow(turnRadius, 2) * Mathf.Pi / 360) / (60);
+		if (Inputs[Key.A])
+		{
+			angularVelocity = new Vector3(0, turnSpeed, 0);
+		}
+		if (Inputs[Key.D])
+		{
+			angularVelocity = new Vector3(0, -turnSpeed, 0);
+		}
+		if (Inputs[Key.Q])
+		{
+			angularVelocity = new Vector3(0, turnSpeed * 0.6f, 0);
+		}
+		if (Inputs[Key.E])
+		{
+			angularVelocity = new Vector3(0, -turnSpeed * 0.6f, 0);
+		}
+		player.RotationDegrees += angularVelocity;
 		angularVelocity *= friction;
-        player.Velocity += gravity * 0.1f;
+		player.Velocity += gravity * 0.1f;
 		player.Velocity *= friction;
-        player.MoveAndSlide();
+		player.MoveAndSlide();
 
-        //Handles pushables
-        KinematicCollision3D collision = player.GetLastSlideCollision();
-        if (collision is not null && collision.GetCollider() is Obstacle obstacle)
-        { 
-            Obstacle instance = obstacle;
-            if (instance.pushable)
-            {
-                
-            }
-        }
+		//Handles pushables
+		KinematicCollision3D collision = player.GetLastSlideCollision();
+		if (collision is not null)
+		{
+			for (int i = 0; i < collision.GetCollisionCount(); i++)
+			{
+				Node3D _obstacle = (Node3D)((Node3D)collision.GetCollider(i)).GetParent();
+				if (_obstacle.GetOutrunClass() == "Pushable")
+				{
+					Obstacle obstacle = (Obstacle)_obstacle;
+					RigidBody3D body = (RigidBody3D)obstacle.body;
+					body.ApplyCentralForce(collision.GetTravel() * mass);
+				}
+			}
+		}
 	}
 	public void _Input(InputEvent @event)
 	{

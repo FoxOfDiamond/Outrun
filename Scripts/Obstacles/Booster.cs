@@ -2,9 +2,12 @@ using Godot;
 using System;
 
 namespace Outrun;
-
+[GlobalClass]
 public partial class Booster : Obstacle
 {
+	protected override string outrunClass { get; set; } = "Booster";
+	[Export]
+	private float strength = 5f;
 	private RigidBody3D _body;
 	public override Node3D body { get => _body; set => _body = (RigidBody3D)value; }
 
@@ -29,11 +32,19 @@ public partial class Booster : Obstacle
 		var target = area.GetParent<Player>();
 		if (helping)
 		{
+<<<<<<< Updated upstream
 			target.Velocity *= new Vector3(5, 0, 5);
 		}
 		else
 		{
 			target.Velocity *= new Vector3(-5, 0, -5);
+=======
+			target.Velocity *= strength;
+		}
+		else
+		{
+			target.Velocity *= 1/strength;
+>>>>>>> Stashed changes
 		}
 		
 	}
