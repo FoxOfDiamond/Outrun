@@ -37,9 +37,11 @@ mesh = SubResource("BoxMesh_7dm0k")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -0.592252, 0.805753, 0, -0.805753, -0.592252, 0, 23.0217, -63.313)
 
-[node name="Player" type="CharacterBody3D" parent="."]
+[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("camera")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 script = ExtResource("1_ig7tw")
+camera = NodePath("../Camera")
+turnCircumference = 2000.0
 
 [node name="Hitbox" type="CollisionShape3D" parent="Player"]
 shape = SubResource("BoxShape3D_7dm0k")
