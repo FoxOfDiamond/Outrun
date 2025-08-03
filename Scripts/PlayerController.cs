@@ -9,7 +9,8 @@ public class PlayerController
 	public Player player;
 	public Camera3D camera;
 	public Vector3 cameraOffset = new(0,4,0);
-	public Vector3 cameraRotationalOffset = new(-20,0,0);
+	public Vector3 baseCameraRotationalOffset = new(-20,0,0);
+	public Vector3 cameraRotationalOffset;
 	private bool mouseLocked = true;
 	private bool freelook = false;
 	public float cameraZoom = 10;
@@ -22,10 +23,14 @@ public class PlayerController
 	private Vector3 angularVelocity = new();
 	private Vector3 gravity;
 	public float gravityStrength;
+	public float baseFriction= 0.3f;
 	public float friction;
-	public float rollResistance;
+	public float baseAirResistance = 0.01f;
+	public float airResistance;
+	public float angularAirResistance;
 	public float cameraSmoothing;
 	public float mass = 1000;
+	public float cameraOffsetSmoothing = 0.2f;
 	private readonly Dictionary<Key, bool> Inputs = new()
 	{
 		[Key.W] = false,
@@ -44,7 +49,7 @@ public class PlayerController
 		gravity = gravityStrength * (Vector3)ProjectSettings.GetSetting("physics/3d/default_gravity_vector");
 		speed = baseSpeed;
 		turnRadius = baseTurnRadius;
-
+		cameraRotationalOffset = baseCameraRotationalOffset;
 	}
 	public void _Process(double delta)
 	{
@@ -52,13 +57,14 @@ public class PlayerController
 		{
 			if (drifting)
 			{
-				camera.RotationDegrees = camera.RotationDegrees.LerpAngleDeg(player.RotationDegrees + cameraRotationalOffset + new Vector3(0, angularVelocity.Y > 0 ? -15 : 15, 0), cameraSmoothing);
+				cameraRotationalOffset = cameraRotationalOffset.LerpAngleDeg(baseCameraRotationalOffset + new Vector3(0, angularVelocity.Y > 0 ? -15 : 15, 0), cameraOffsetSmoothing);
 
 			}
 			else
 			{
-				camera.RotationDegrees = camera.RotationDegrees.LerpAngleDeg(player.RotationDegrees + cameraRotationalOffset, 0.2f);
+				cameraRotationalOffset = cameraRotationalOffset.LerpAngleDeg(baseCameraRotationalOffset, cameraOffsetSmoothing);
 			}
+			camera.RotationDegrees = camera.RotationDegrees.LerpAngleDeg(player.RotationDegrees + cameraRotationalOffset, 0.2f);
 		}
 		camera.Position = camera.Position.Lerp(player.Position + camera.GlobalBasis.Z * cameraZoom + camera.GlobalBasis.Z * cameraOffset.Z + camera.GlobalBasis.X * cameraOffset.X + camera.GlobalBasis.Y * cameraOffset.Y, cameraSmoothing);
 	}
@@ -74,10 +80,6 @@ public class PlayerController
 		}
 		if (drifting)
 		{
-			if (Mathf.Abs(angularVelocity.Y) < 3)
-			{
-				drifting = false;
-			}
 			turnRadius = baseTurnRadius * 0.7f;
 		}
 		else
@@ -85,26 +87,49 @@ public class PlayerController
 			turnRadius = baseTurnRadius;
 		}
 		turnSpeed = player.Velocity.Length() / (Mathf.Pow(turnRadius, 2) * Mathf.Pi / 360) / (60);
+
+		Vector2 angularControl = new();
 		if (Inputs[Key.A])
 		{
-			angularVelocity = new Vector3(0, turnSpeed, 0);
+			angularControl += new Vector2(1,0);
 		}
 		if (Inputs[Key.D])
 		{
-			angularVelocity = new Vector3(0, -turnSpeed, 0);
+			angularControl += new Vector2(-1,0);
 		}
 		if (Inputs[Key.Q])
 		{
-			angularVelocity = new Vector3(0, turnSpeed * 0.6f, 0);
+			angularControl += new Vector2(1,1);
 		}
 		if (Inputs[Key.E])
 		{
-			angularVelocity = new Vector3(0, -turnSpeed * 0.6f, 0);
+			angularControl += new Vector2(-1,1);
 		}
+		bool forward = true;
+		if (player.Velocity.Normalized().Dot(player.GlobalBasis.Z) > 0.5)
+		{
+			forward = false;
+		}
+		if (angularControl.Length() == 0)
+		{
+			drifting = false;
+			angularControl = new(0,1);
+		}
+		angularVelocity = new Vector3(0, turnSpeed*angularControl.Normalized().X*(forward?1:-1), 0);
+
+
+		player.Velocity += gravity;
+
+		angularAirResistance = baseAirResistance * angularVelocity.Y;
+		angularVelocity -= new Vector3(0,angularAirResistance,0);
+
+		airResistance = baseAirResistance * player.Velocity.Length();
+		player.Velocity -= player.Velocity.Normalized()*airResistance;
+
+		friction = baseFriction * gravityStrength;
+		player.Velocity -= player.Velocity.Normalized()*Mathf.Clamp(friction,0,player.Velocity.Length());
+
 		player.RotationDegrees += angularVelocity;
-		angularVelocity *= friction;
-		player.Velocity += gravity * 0.1f;
-		player.Velocity *= friction;
 		player.MoveAndSlide();
 
 		//Handles pushables

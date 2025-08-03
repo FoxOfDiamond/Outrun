@@ -16,15 +16,15 @@ public partial class Player : CharacterBody3D
 	[Export(PropertyHint.Range, "0.01,1,")]
 	float cameraSmoothing = 0.2f;
 	[Export]
-	float gravityStrength { get; set; } = 9.8f;
+	float gravityStrength { get; set; } = 0.98f;
 	[Export]
 	float speed { get; set; } = 1f;
 	[Export]
 	float turnRadius { get; set; } = 100f;
 	[Export]
-	float friction { get; set; } = 0.98f;
+	public float friction { get; set; } = 0.2f;
 	[Export]
-	float rollResistance { get; set; } = 2;
+	float airResistance { get; set; } = 0.01f;
 	[Export]
 	float mass = 1000;
 	private PlayerController controller;
@@ -39,8 +39,8 @@ public partial class Player : CharacterBody3D
 			gravityStrength = gravityStrength,
 			baseSpeed = speed,
 			baseTurnRadius = turnRadius,
-			friction = friction,
-			rollResistance = rollResistance,
+			baseFriction = friction,
+			baseAirResistance = airResistance,
 			mass = mass,
 			cameraSmoothing = cameraSmoothing
 		};
