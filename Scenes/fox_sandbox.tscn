@@ -145,6 +145,7 @@ environment = SubResource("Environment_1bvp3")
 transform = Transform3D(1, 0, 0, 0, -0.592252, 0.805753, 0, -0.805753, -0.592252, -4.35109, 39.5211, -70.0393)
 
 [node name="Ground" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 axis_lock_linear_x = true
 axis_lock_linear_y = true
 axis_lock_linear_z = true
@@ -211,20 +212,11 @@ gravity = Vector3(0, 20, 0)
 initial_velocity_min = 7.0
 initial_velocity_max = 10.0
 
-[node name="DriftParticles2" type="CPUParticles3D" parent="Player"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 2.5)
-emitting = false
-amount = 20
-mesh = SubResource("SphereMesh_do50k")
-gravity = Vector3(0, 0, 0)
-initial_velocity_min = 5.0
-initial_velocity_max = 8.0
-
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.72762, 15.578, 24.3243)
 
 [node name="Pushable" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 36.5642, -9.47119)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.8627, 13.6021, -23.5704)
 script = ExtResource("2_t4sx0")
 metadata/_custom_type_script = "uid://cmpwlsjd6ds51"
 

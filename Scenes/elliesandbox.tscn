@@ -1,9 +1,10 @@
-[gd_scene load_steps=15 format=3 uid="uid://dg2o03dsvksoa"]
+[gd_scene load_steps=17 format=3 uid="uid://d4i57h7nf3a45"]
 
 [ext_resource type="Script" uid="uid://b64scxry8hdfu" path="res://Scripts/Player.cs" id="1_2q7fk"]
 [ext_resource type="Script" uid="uid://bcmuxijecxcf7" path="res://Scripts/World.cs" id="1_7hney"]
 [ext_resource type="PackedScene" uid="uid://c6p64xaqyula" path="res://Scenes/Obstacles/booster.tscn" id="3_7hney"]
 [ext_resource type="Script" uid="uid://cmpwlsjd6ds51" path="res://Scripts/Obstacles/Pushable.cs" id="4_vsnb1"]
+[ext_resource type="Script" uid="uid://c78g2f4du5rru" path="res://Scripts/Abilities/Meow.cs" id="6_7hney"]
 [ext_resource type="PackedScene" uid="uid://bp4t7n1fklwg2" path="res://Data/Abilities/Pickup/Meow.tscn" id="6_vsnb1"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
@@ -35,6 +36,14 @@ albedo_color = Color(0.972549, 0.14902, 0.121569, 0.298039)
 size = Vector3(5, 10, 5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_kry3j"]
+
+[sub_resource type="Resource" id="Resource_vsnb1"]
+resource_local_to_scene = true
+script = ExtResource("6_7hney")
+uniqueName = ""
+myKey = 49
+Uses = 10
+Cooldown = 3.0
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_7hney")
@@ -117,3 +126,4 @@ offset_bottom = 40.0
 
 [node name="Meow" parent="." instance=ExtResource("6_vsnb1")]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 10.0412, 4.32026, -1.80211)
+toAdd = SubResource("Resource_vsnb1")

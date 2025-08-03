@@ -46,7 +46,7 @@ public partial class Player : CharacterBody3D
 	public float friction { get; set; } = 0.2f;
 	[Export]
 	public float traction { get; set; } = 0.9f;
-	Array<Ability> abilities;
+	Array<Ability> abilities = [];
 	float airResistance { get; set; } = 0.01f;
 	[Export]
 	float mass = 1000; //Only affects pushables

@@ -52,7 +52,7 @@ public class PlayerController
 	public float angularAirResistance;
 	public float cameraSmoothing;
 	public float mass = 1000;
-	public Array<Ability> abilities;
+	public Array<Ability> abilities = new();
 	public float cameraOffsetSmoothing = 0.2f;
 	private readonly Dictionary<Key, bool> Inputs = new()
 	{
@@ -66,7 +66,7 @@ public class PlayerController
 		[Key.Space] = false,
 		[Key.Key1] = false,
 		[Key.Key2] = false,
-		[Key.Key3] = false
+		[Key.Key3] = false,
 		[Key.V] = false,
 		[Key.Shift] = false
 	};
@@ -223,7 +223,7 @@ public class PlayerController
 		player.MoveAndSlide();
 
 		//Abilities
-		foreach (var thisAbility in abilities)
+		foreach (Ability thisAbility in abilities)
 		{
 			if (thisAbility.OnCooldown)
 			{
@@ -265,6 +265,7 @@ public class PlayerController
 		foreach (var thisKey in InputJustPressed.Keys)
 		{
 			InputJustPressed[thisKey] = false;
+		}
 		airborn = !player.IsOnFloor();
 
 		if (drifting)
