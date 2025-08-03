@@ -5,7 +5,7 @@ using Godot.Collections;
 namespace Outrun;
 
 [GlobalClass]
-public partial class Player : CharacterBody3D
+public partial class Player : CharacterBody3D,IOutrunClass
 {
 	[Export]
 	Camera3D camera { get; set; }

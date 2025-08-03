@@ -21,7 +21,6 @@ public partial class Pickupable : Area
 		{
 			Player player = (Player)body;
 			player.AddAbility(ability);
-			GetParent().RemoveChild(this);
 			CallDeferred("queue_free");
 		}
 	}

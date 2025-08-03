@@ -10,8 +10,8 @@ public class PlayerController
 	public Player player;
 	public Ghost ghost;
 	public Camera3D camera;
-	public Vector3 cameraOffset = new(0,4,0);
-	public Vector3 baseCameraRotationalOffset = new(-20,0,0);
+	public Vector3 cameraOffset = new(0, 4, 0);
+	public Vector3 baseCameraRotationalOffset = new(-20, 0, 0);
 	public Vector3 cameraRotationalOffset;
 	public CpuParticles3D driftParticle;
 	public CpuParticles3D boostParticle;
@@ -45,7 +45,7 @@ public class PlayerController
 	private Vector3 angularVelocity = new();
 	private Vector3 gravity;
 	public float gravityStrength;
-	public float baseFriction= 0.3f;
+	public float baseFriction = 0.3f;
 	public float friction;
 	public float baseAirResistance = 0.01f;
 	public float airResistance;
@@ -64,9 +64,6 @@ public class PlayerController
 		[Key.Q] = false,
 		[Key.C] = false,
 		[Key.Space] = false,
-		[Key.Key1] = false,
-		[Key.Key2] = false,
-		[Key.Key3] = false,
 		[Key.V] = false,
 		[Key.Shift] = false
 	};
@@ -101,7 +98,7 @@ public class PlayerController
 			camera.RotationDegrees = camera.RotationDegrees.LerpAngleDeg(player.RotationDegrees + cameraRotationalOffset, 0.2f);
 		}
 		camera.Position = camera.Position.Lerp(player.Position + camera.GlobalBasis.Z * cameraZoom + camera.GlobalBasis.Z * cameraOffset.Z + camera.GlobalBasis.X * cameraOffset.X + camera.GlobalBasis.Y * cameraOffset.Y, cameraSmoothing);
-		
+
 		driftParticle.Emitting = false;
 		boostParticle.Emitting = false;
 		if (drifting)
@@ -264,25 +261,28 @@ public class PlayerController
 	{
 		if (@event is InputEventKey keyEvent)
 		{
-			if (Inputs.ContainsKey(keyEvent.Keycode))
-			{
-				Inputs[keyEvent.Keycode] = keyEvent.Pressed;
-
+			if (keyEvent.Pressed)
+			{ 
 				for (int i = 0; i < abilities.Count; i++)
 				{
 					Ability ability = abilities[i];
-					if (keyEvent.Keycode == Key.Key1 + i && !ability.onCooldown)
+					if (keyEvent.Keycode == (Key.Key1 + i) && !ability.onCooldown)
 					{
 						ability.OnUse(player);
 						ability.uses -= 1;
 						if (ability.uses < 1)
 						{
 							abilities.Remove(ability);
+							RefreshAbilityUi();
 						}
 						ability.TriggerCooldown();
+						return;
 					}
 				}
-
+			}
+			if (Inputs.ContainsKey(keyEvent.Keycode))
+			{
+				Inputs[keyEvent.Keycode] = keyEvent.Pressed;
 			}
 			if (keyEvent.Keycode == Key.Escape && keyEvent.Pressed)
 			{
@@ -361,14 +361,24 @@ public class PlayerController
 
 	public void AddAbility(Ability toAdd)
 	{
-		foreach (var thisAbility in abilities)
+		foreach (Ability ability in abilities)
 		{
-			if (thisAbility.uniqueName == toAdd.uniqueName)
+			if (ability.GetOutrunClass() == toAdd.GetOutrunClass())
 			{
-				thisAbility.uses++;
+				ability.uses++;
 				return;
 			}
 		}
 		abilities.Add(toAdd);
+		RefreshAbilityUi();
+	}
+	public void RefreshAbilityUi()
+	{
+		World.abilityUi.Clear();
+		foreach (Ability ability in abilities)
+		{
+			World.abilityUi.AddItem(ability.uses + " " + ability.GetOutrunClass(), null, false);
+		}
+
 	}
 }
