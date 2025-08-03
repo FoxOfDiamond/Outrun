@@ -32,19 +32,11 @@ public partial class Booster : Obstacle
 		var target = area.GetParent<Player>();
 		if (helping)
 		{
-<<<<<<< Updated upstream
-			target.Velocity *= new Vector3(5, 0, 5);
-		}
-		else
-		{
-			target.Velocity *= new Vector3(-5, 0, -5);
-=======
 			target.Velocity *= strength;
 		}
 		else
 		{
 			target.Velocity *= 1/strength;
->>>>>>> Stashed changes
 		}
 		
 	}

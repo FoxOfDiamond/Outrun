@@ -8,23 +8,24 @@ public class PlayerController
 {
 	public Player player;
 	public Camera3D camera;
-	private Vector3 cameraOffset = new(0,4,0);
-	private Vector3 cameraRotationalOffset = new(-20,0,0);
+	public Vector3 cameraOffset = new(0,4,0);
+	public Vector3 cameraRotationalOffset = new(-20,0,0);
 	private bool mouseLocked = true;
 	private bool freelook = false;
-	private float cameraZoom = 10;
+	public float cameraZoom = 10;
 	private bool drifting = false;
-	private float baseSpeed = 0.7f;
+	public float baseSpeed = 0.7f;
 	private float speed;
-	private float baseTurnRadius = 20;
+	public float baseTurnRadius = 20;
 	private float turnRadius = 20;
 	private float turnSpeed;
 	private Vector3 angularVelocity = new();
 	private Vector3 gravity;
-	private float gravityStrength;
-	private float friction;
-	private float cameraSmoothing;
-	private float mass = 1000;
+	public float gravityStrength;
+	public float friction;
+	public float rollResistance;
+	public float cameraSmoothing;
+	public float mass = 1000;
 	private readonly Dictionary<Key, bool> Inputs = new()
 	{
 		[Key.W] = false,
@@ -36,18 +37,6 @@ public class PlayerController
 		[Key.C] = false,
 		[Key.Space] = false
 	};
-	public PlayerController(Player _player, Camera3D _camera, Vector3 _cameraOffset, float _cameraZoom, float _gravityStrength, float _speed, float _turnRadius, float _friction, float _cameraSmoothing)
-	{
-		player = _player;
-		camera = _camera;
-		cameraOffset = _cameraOffset;
-		cameraZoom = _cameraZoom;
-		gravityStrength = _gravityStrength;
-		baseSpeed = _speed;
-		baseTurnRadius = _turnRadius;
-		friction = _friction;
-		cameraSmoothing = _cameraSmoothing;
-	}
 
 	public void _Ready()
 	{

@@ -23,10 +23,27 @@ public partial class Player : CharacterBody3D
 	float turnRadius { get; set; } = 100f;
 	[Export]
 	float friction { get; set; } = 0.98f;
+	[Export]
+	float rollResistance { get; set; } = 2;
+	[Export]
+	float mass = 1000;
 	private PlayerController controller;
 	public override void _Ready()
 	{
-		controller = new(this, camera, cameraOffset, cameraZoom, gravityStrength, speed, turnRadius, friction, cameraSmoothing);
+		controller = new()
+		{
+			player = this,
+			camera = camera,
+			cameraOffset = cameraOffset,
+			cameraZoom = cameraZoom,
+			gravityStrength = gravityStrength,
+			baseSpeed = speed,
+			baseTurnRadius = turnRadius,
+			friction = friction,
+			rollResistance = rollResistance,
+			mass = mass,
+			cameraSmoothing = cameraSmoothing
+		};
 		controller._Ready();
 	}
 	public override void _Process(double delta)
