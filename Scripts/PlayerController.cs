@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Godot;
 using Godot.Collections;
 
@@ -7,6 +8,7 @@ namespace Outrun;
 public class PlayerController
 {
 	public Player player;
+	public Ghost ghost;
 	public Camera3D camera;
 	public Vector3 cameraOffset = new(0,4,0);
 	public Vector3 baseCameraRotationalOffset = new(-20,0,0);
@@ -17,6 +19,8 @@ public class PlayerController
 	public Color stage1DriftColor;
 	public Color stage2DriftColor;
 	public Color stage3DriftColor;
+	public ArrayList snapshots = new();
+	public int ghostDelay;
 	private bool mouseLocked = true;
 	private bool freelook = false;
 	public float cameraZoom = 10;
@@ -58,7 +62,8 @@ public class PlayerController
 		[Key.E] = false,
 		[Key.Q] = false,
 		[Key.C] = false,
-		[Key.Space] = false
+		[Key.V] = false,
+		[Key.Shift] = false
 	};
 
 	public void _Ready()
@@ -71,14 +76,22 @@ public class PlayerController
 	{
 		if (mouseLocked && !freelook)
 		{
-			if (drifting)
+			if (Inputs[Key.Shift])
 			{
-				cameraRotationalOffset = cameraRotationalOffset.LerpAngleDeg(baseCameraRotationalOffset + new Vector3(0, driftDirection * driftStrength * -15, 0), cameraOffsetSmoothing);
-
+				cameraRotationalOffset = cameraRotationalOffset.LerpAngleDeg(baseCameraRotationalOffset + new Vector3(0, 180, 0), cameraOffsetSmoothing);
 			}
 			else
 			{
-				cameraRotationalOffset = cameraRotationalOffset.LerpAngleDeg(baseCameraRotationalOffset, cameraOffsetSmoothing);
+
+				if (drifting)
+				{
+					cameraRotationalOffset = cameraRotationalOffset.LerpAngleDeg(baseCameraRotationalOffset + new Vector3(0, driftDirection * driftStrength * -15, 0), cameraOffsetSmoothing);
+
+				}
+				else
+				{
+					cameraRotationalOffset = cameraRotationalOffset.LerpAngleDeg(baseCameraRotationalOffset, cameraOffsetSmoothing);
+				}
 			}
 			camera.RotationDegrees = camera.RotationDegrees.LerpAngleDeg(player.RotationDegrees + cameraRotationalOffset, 0.2f);
 		}
@@ -170,7 +183,7 @@ public class PlayerController
 		}
 		if (drifting)
 		{
-			driftStrength = 1 + angularControl.X * driftDirection *0.7f;
+			driftStrength = 1 + angularControl.X * driftDirection * 0.7f;
 			angularVelocity = new Vector3(0, turnSpeed * driftStrength * driftDirection, 0);
 		}
 		else
@@ -233,6 +246,14 @@ public class PlayerController
 		{
 			driftBoost = 0;
 			driftBoostStage = 0;
+		}
+
+		snapshots.Add(new Godot.Collections.Array() { player.Position, player.Rotation });
+		if (snapshots.Count > ghostDelay)
+		{
+			ghost.Position = (Vector3)((Godot.Collections.Array)snapshots[0])[0];
+			ghost.Rotation = (Vector3)((Godot.Collections.Array)snapshots[0])[1];
+			snapshots.RemoveAt(0);
 		}
 	}
 	public void _Input(InputEvent @event)

@@ -1,8 +1,9 @@
-[gd_scene load_steps=33 format=4 uid="uid://b4s5ssp14i7wn"]
+[gd_scene load_steps=34 format=4 uid="uid://b4s5ssp14i7wn"]
 
 [ext_resource type="Script" uid="uid://b64scxry8hdfu" path="res://Scripts/Player.cs" id="1_4jicv"]
 [ext_resource type="Script" uid="uid://cmpwlsjd6ds51" path="res://Scripts/Obstacles/Pushable.cs" id="2_t4sx0"]
 [ext_resource type="Script" uid="uid://dsvv5h7t333m7" path="res://Scripts/Obstacles/Booster.cs" id="3_n8tqw"]
+[ext_resource type="Script" uid="uid://cqcgwp4n8lk1s" path="res://Scripts/Ghost.cs" id="4_t4sx0"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -159,12 +160,14 @@ transform = Transform3D(400, 0, 0, 0, 2, 0, 0, 0, 400, 0, 0, 0)
 mesh = SubResource("BoxMesh_7dm0k")
 surface_material_override/0 = SubResource("StandardMaterial3D_xqu6k")
 
-[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("camera", "driftParticle", "boostParticle")]
+[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("camera", "ghost", "driftParticle", "boostParticle")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.624, 0)
 script = ExtResource("1_4jicv")
 camera = NodePath("../Camera")
+ghost = NodePath("../Ghost")
 driftParticle = NodePath("DriftParticles")
 boostParticle = NodePath("BoostParticles")
+ghostDelay = 150
 stage3DriftColor = Color(0.985733, 0.000802243, 0.985727, 1)
 cameraSmoothing = 1.0
 
@@ -207,6 +210,15 @@ mesh = SubResource("SphereMesh_t4sx0")
 gravity = Vector3(0, 20, 0)
 initial_velocity_min = 7.0
 initial_velocity_max = 10.0
+
+[node name="DriftParticles2" type="CPUParticles3D" parent="Player"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 2.5)
+emitting = false
+amount = 20
+mesh = SubResource("SphereMesh_do50k")
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 5.0
+initial_velocity_max = 8.0
 
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.72762, 15.578, 24.3243)
@@ -332,3 +344,14 @@ shape = SubResource("ConcavePolygonShape3D_do50k")
 
 [node name="CSGBakedMeshInstance3D3" type="MeshInstance3D" parent="Road"]
 mesh = SubResource("ArrayMesh_dnd5l")
+
+[node name="Ghost" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.0209, 5.4442, 0)
+script = ExtResource("4_t4sx0")
+metadata/_custom_type_script = "uid://cqcgwp4n8lk1s"
+
+[node name="Mesh" type="MeshInstance3D" parent="Ghost"]
+transform = Transform3D(4, 0, 0, 0, 2, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("BoxMesh_7dm0k")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_7dm0k")

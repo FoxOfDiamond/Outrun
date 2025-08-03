@@ -10,9 +10,13 @@ public partial class Player : CharacterBody3D
 	[Export]
 	Camera3D camera { get; set;}
 	[Export]
+	Ghost ghost { get; set;}
+	[Export]
 	CpuParticles3D driftParticle { get; set; }
 	[Export]
 	CpuParticles3D boostParticle { get; set; }
+	[Export]
+	int ghostDelay = 300;
 	[Export]
 	float driftChargeLength { get; set; } = 300;
 	[Export]
@@ -45,15 +49,17 @@ public partial class Player : CharacterBody3D
 	[Export]
 	float airResistance { get; set; } = 0.01f;
 	[Export]
-	float mass = 1000;
+	float mass = 1000; //Only affects pushables
 	private PlayerController controller;
 	public override void _Ready()
 	{
 		controller = new()
 		{
 			player = this,
+			ghost = ghost,
 			boostParticle = boostParticle,
 			driftParticle = driftParticle,
+			ghostDelay = ghostDelay,
 			driftChargeLength = driftChargeLength,
 			driftBoostPower = driftBoost,
 			driftBoostDecay = driftBoostDecay,
