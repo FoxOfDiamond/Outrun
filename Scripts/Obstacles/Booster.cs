@@ -7,7 +7,7 @@ public partial class Booster : Obstacle
 {
 	protected override string outrunClass { get; set; } = "Booster";
 	[Export]
-	private float strength = 5f;
+	private float strength = 2f;
 	private RigidBody3D _body;
 	public override Node3D body { get => _body; set => _body = (RigidBody3D)value; }
 
@@ -32,11 +32,12 @@ public partial class Booster : Obstacle
 		var target = area.GetParent<Player>();
 		if (helping)
 		{
-			target.Velocity *= strength;
+			target.Velocity *= new Vector3(strength, 1, strength);
+			target.Velocity += Vector3.Up * strength * 10;
 		}
 		else
 		{
-			target.Velocity *= 1/strength;
+			target.Velocity *= new Vector3(-strength, 1, -strength);
 		}
 		
 	}

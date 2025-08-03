@@ -1,0 +1,119 @@
+[gd_scene load_steps=15 format=3 uid="uid://dg2o03dsvksoa"]
+
+[ext_resource type="Script" uid="uid://b64scxry8hdfu" path="res://Scripts/Player.cs" id="1_2q7fk"]
+[ext_resource type="Script" uid="uid://bcmuxijecxcf7" path="res://Scripts/World.cs" id="1_7hney"]
+[ext_resource type="PackedScene" uid="uid://c6p64xaqyula" path="res://Scenes/Obstacles/booster.tscn" id="3_7hney"]
+[ext_resource type="Script" uid="uid://cmpwlsjd6ds51" path="res://Scripts/Obstacles/Pushable.cs" id="4_vsnb1"]
+[ext_resource type="PackedScene" uid="uid://bp4t7n1fklwg2" path="res://Data/Abilities/Pickup/Meow.tscn" id="6_vsnb1"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0xm2m"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_h2yge"]
+sky_material = SubResource("ProceduralSkyMaterial_0xm2m")
+
+[sub_resource type="Environment" id="Environment_1bvp3"]
+background_mode = 2
+sky = SubResource("Sky_h2yge")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ig7tw"]
+size = Vector3(400, 2, 400)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7dm0k"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7dm0k"]
+margin = 0.5
+size = Vector3(4, 2, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7dm0k"]
+albedo_color = Color(0.972549, 0.14902, 0.121569, 0.298039)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jjvhh"]
+size = Vector3(5, 10, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kry3j"]
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_7hney")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1bvp3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.592252, 0.805753, 0, -0.805753, -0.592252, -4.35109, 39.5211, -70.0393)
+
+[node name="Ground" type="RigidBody3D" parent="."]
+axis_lock_linear_x = true
+axis_lock_linear_y = true
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+
+[node name="Hitbox" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_ig7tw")
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(400, 0, 0, 0, 2, 0, 0, 0, 400, 0, 0, 0)
+mesh = SubResource("BoxMesh_7dm0k")
+
+[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("camera")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+script = ExtResource("1_2q7fk")
+camera = NodePath("../Camera")
+cameraSmoothing = 1.0
+turnRadius = 7.0
+
+[node name="Detector" type="Area3D" parent="Player"]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+
+[node name="Hitbox" type="CollisionShape3D" parent="Player/Detector"]
+shape = SubResource("BoxShape3D_7dm0k")
+
+[node name="Hitbox" type="CollisionShape3D" parent="Player"]
+shape = SubResource("BoxShape3D_7dm0k")
+
+[node name="Mesh" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(4, 0, 0, 0, 2, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("BoxMesh_7dm0k")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_7dm0k")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.72762, 15.578, 24.3243)
+
+[node name="Booster" parent="." instance=ExtResource("3_7hney")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 3.5, 0)
+
+[node name="Pushable" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.52892, -9.47119)
+script = ExtResource("4_vsnb1")
+metadata/_custom_type_script = "uid://cmpwlsjd6ds51"
+
+[node name="Body" type="RigidBody3D" parent="Pushable"]
+
+[node name="Hitbox" type="CollisionShape3D" parent="Pushable/Body"]
+shape = SubResource("BoxShape3D_jjvhh")
+
+[node name="Mesh" type="MeshInstance3D" parent="Pushable/Body"]
+transform = Transform3D(5, 0, 0, 0, 10, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("BoxMesh_kry3j")
+skeleton = NodePath("")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="Node2D"]
+
+[node name="Meow" parent="." instance=ExtResource("6_vsnb1")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 10.0412, 4.32026, -1.80211)

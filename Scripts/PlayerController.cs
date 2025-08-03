@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -8,8 +9,8 @@ public class PlayerController
 {
 	public Player player;
 	public Camera3D camera;
-	public Vector3 cameraOffset = new(0,4,0);
-	public Vector3 cameraRotationalOffset = new(-20,0,0);
+	public Vector3 cameraOffset = new(0, 4, 0);
+	public Vector3 cameraRotationalOffset = new(-20, 0, 0);
 	private bool mouseLocked = true;
 	private bool freelook = false;
 	public float cameraZoom = 10;
@@ -26,6 +27,7 @@ public class PlayerController
 	public float rollResistance;
 	public float cameraSmoothing;
 	public float mass = 1000;
+	public Array<Ability> abilities;
 	private readonly Dictionary<Key, bool> Inputs = new()
 	{
 		[Key.W] = false,
@@ -35,8 +37,12 @@ public class PlayerController
 		[Key.E] = false,
 		[Key.Q] = false,
 		[Key.C] = false,
-		[Key.Space] = false
+		[Key.Space] = false,
+		[Key.Key1] = false,
+		[Key.Key2] = false,
+		[Key.Key3] = false
 	};
+	private Dictionary<Key, bool> InputJustPressed = [];
 
 	public void _Ready()
 	{
@@ -44,6 +50,11 @@ public class PlayerController
 		gravity = gravityStrength * (Vector3)ProjectSettings.GetSetting("physics/3d/default_gravity_vector");
 		speed = baseSpeed;
 		turnRadius = baseTurnRadius;
+
+		foreach (var thisInput in Inputs)
+		{
+			InputJustPressed.Add(thisInput.Key, thisInput.Value);
+		}
 
 	}
 	public void _Process(double delta)
@@ -107,6 +118,29 @@ public class PlayerController
 		player.Velocity *= friction;
 		player.MoveAndSlide();
 
+		//Abilities
+		foreach (var thisAbility in abilities)
+		{
+			if (thisAbility.OnCooldown)
+			{
+				thisAbility._Process(delta);
+			}
+			else
+			{
+				if (InputJustPressed[thisAbility.myKey])
+				{
+					thisAbility.OnUse(player);
+					thisAbility.Uses -= 1;
+					if (thisAbility.Uses < 1)
+					{
+						abilities.Remove(thisAbility);
+					}
+					thisAbility.OnCooldown = true;
+					thisAbility.Counter = 0;
+				}
+			}
+		}
+
 		//Handles pushables
 		KinematicCollision3D collision = player.GetLastSlideCollision();
 		if (collision is not null)
@@ -122,6 +156,12 @@ public class PlayerController
 				}
 			}
 		}
+
+		//Reset inputs
+		foreach (var thisKey in InputJustPressed.Keys)
+		{
+			InputJustPressed[thisKey] = false;
+		}
 	}
 	public void _Input(InputEvent @event)
 	{
@@ -129,7 +169,9 @@ public class PlayerController
 		{
 			if (Inputs.ContainsKey(keyEvent.Keycode))
 			{
+				if (!Inputs[keyEvent.Keycode]) InputJustPressed[keyEvent.Keycode] = keyEvent.Pressed;
 				Inputs[keyEvent.Keycode] = keyEvent.Pressed;
+
 			}
 			if (keyEvent.Keycode == Key.Escape && keyEvent.Pressed)
 			{
@@ -148,13 +190,13 @@ public class PlayerController
 				if (keyEvent.Pressed && (player.IsOnFloor() || drifting))
 				{
 					if (!drifting)
-					{  
+					{
 						player.Velocity += Vector3.Up * 15;
 					}
 					drifting = true;
 				}
 				else
-				{ 
+				{
 					drifting = false;
 				}
 			}
@@ -181,5 +223,18 @@ public class PlayerController
 				camera.RotationDegrees += new Vector3(mouseEvent.ScreenRelative.Y * -0.1f, mouseEvent.ScreenRelative.X * -0.1f, 0);
 			}
 		}
+	}
+
+	public void AddAbility(Ability toAdd)
+	{
+		foreach (var thisAbility in abilities)
+		{
+			if (thisAbility.uniqueName == toAdd.uniqueName)
+			{
+				thisAbility.Uses++;
+				return;
+			}
+		}
+		abilities.Add(toAdd);
 	}
 }

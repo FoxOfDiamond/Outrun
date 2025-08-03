@@ -8,7 +8,7 @@ namespace Outrun;
 public partial class Player : CharacterBody3D
 {
 	[Export]
-	Camera3D camera { get; set;}
+	Camera3D camera { get; set; }
 	[Export]
 	Vector3 cameraOffset { get; set; } = new(0, 4, 0);
 	[Export]
@@ -27,6 +27,7 @@ public partial class Player : CharacterBody3D
 	float rollResistance { get; set; } = 2;
 	[Export]
 	float mass = 1000;
+	Array<Ability> abilities;
 	private PlayerController controller;
 	public override void _Ready()
 	{
@@ -42,7 +43,8 @@ public partial class Player : CharacterBody3D
 			friction = friction,
 			rollResistance = rollResistance,
 			mass = mass,
-			cameraSmoothing = cameraSmoothing
+			cameraSmoothing = cameraSmoothing,
+			abilities = abilities
 		};
 		controller._Ready();
 	}
@@ -57,6 +59,10 @@ public partial class Player : CharacterBody3D
 	public override void _Input(InputEvent @event)
 	{
 		controller._Input(@event);
+	}
+	public void AddAbility(Ability toAdd)
+	{
+		controller.AddAbility(toAdd);
 	}
 
 }

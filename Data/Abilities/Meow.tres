@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Meow" load_steps=2 format=3 uid="uid://47fctqcjv85"]
+
+[ext_resource type="Script" uid="uid://c78g2f4du5rru" path="res://Scripts/Abilities/Meow.cs" id="1_3xalx"]
+
+[resource]
+resource_local_to_scene = true
+script = ExtResource("1_3xalx")
+myKey = 49
+Uses = 10
+Cooldown = 3.0

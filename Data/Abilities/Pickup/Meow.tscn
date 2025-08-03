@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://bp4t7n1fklwg2"]
+
+[ext_resource type="Texture2D" uid="uid://dyrbblcbpq22j" path="res://icon.svg" id="1_nqox0"]
+[ext_resource type="Script" uid="uid://b8vgoueb80rm6" path="res://Scripts/Pickupable.cs" id="2_kjhbe"]
+[ext_resource type="Resource" uid="uid://47fctqcjv85" path="res://Data/Abilities/Meow.tres" id="3_kjhbe"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_d36s0"]
+
+[node name="Meow" type="Sprite3D"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+texture = ExtResource("1_nqox0")
+script = ExtResource("2_kjhbe")
+toAdd = ExtResource("3_kjhbe")
+
+[node name="Detector" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Detector"]
+shape = SubResource("BoxShape3D_d36s0")
