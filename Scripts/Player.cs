@@ -51,6 +51,11 @@ public partial class Player : CharacterBody3D
 	[Export]
 	float mass = 1000; //Only affects pushables
 	private PlayerController controller;
+	protected string outrunClass { get; set; } = "Player";
+	public override void _EnterTree()
+	{
+		setMeta();
+	}
 	public override void _Ready()
 	{
 		controller = new()
@@ -97,6 +102,10 @@ public partial class Player : CharacterBody3D
 	public void AddAbility(Ability toAdd)
 	{
 		controller.AddAbility(toAdd);
+	}
+	public void setMeta()
+	{
+		SetMeta("OutrunClass", outrunClass);
 	}
 
 }

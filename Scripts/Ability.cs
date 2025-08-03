@@ -11,24 +11,30 @@ public abstract partial class Ability : Resource
     [Export]
     public Key myKey;
     [Export]
-    public int Uses = 1;
+    public int uses = 1;
     [Export]
-    public double Cooldown = 0;
+    public double cooldown = 0;
 
-    public double Counter = 0;
-    public bool OnCooldown = false;
-
-    public void _Process(double delta)
+    protected double lastUse = 0;
+    public bool onCooldown
     {
-        if (Cooldown > 0 && Counter < Cooldown)
+        get
         {
-            Counter += delta;
+            return World.physicsFrame >= lastUse + cooldown;
         }
-        else
+        set
         {
-            OnCooldown = false;
+            throw new Exception("Use TriggetCooldown()");
         }
     }
 
+    public void _Process(double delta)
+    {
+    }
+
     public abstract void OnUse(Player target);
+    public void TriggerCooldown()
+    {
+        lastUse = World.physicsFrame;
+    }
 }

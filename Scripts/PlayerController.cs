@@ -70,7 +70,6 @@ public class PlayerController
 		[Key.V] = false,
 		[Key.Shift] = false
 	};
-	private Dictionary<Key, bool> InputJustPressed = [];
 
 	public void _Ready()
 	{
@@ -222,29 +221,6 @@ public class PlayerController
 
 		player.MoveAndSlide();
 
-		//Abilities
-		foreach (Ability thisAbility in abilities)
-		{
-			if (thisAbility.OnCooldown)
-			{
-				thisAbility._Process(delta);
-			}
-			else
-			{
-				if (InputJustPressed[thisAbility.myKey])
-				{
-					thisAbility.OnUse(player);
-					thisAbility.Uses -= 1;
-					if (thisAbility.Uses < 1)
-					{
-						abilities.Remove(thisAbility);
-					}
-					thisAbility.OnCooldown = true;
-					thisAbility.Counter = 0;
-				}
-			}
-		}
-
 		//Handles pushables
 		KinematicCollision3D collision = player.GetLastSlideCollision();
 		if (collision is not null)
@@ -259,12 +235,6 @@ public class PlayerController
 					body.ApplyCentralForce(collision.GetTravel() * mass);
 				}
 			}
-		}
-
-		//Reset inputs
-		foreach (var thisKey in InputJustPressed.Keys)
-		{
-			InputJustPressed[thisKey] = false;
 		}
 		airborn = !player.IsOnFloor();
 
@@ -296,8 +266,22 @@ public class PlayerController
 		{
 			if (Inputs.ContainsKey(keyEvent.Keycode))
 			{
-				if (!Inputs[keyEvent.Keycode]) InputJustPressed[keyEvent.Keycode] = keyEvent.Pressed;
 				Inputs[keyEvent.Keycode] = keyEvent.Pressed;
+
+				for (int i = 0; i < abilities.Count; i++)
+				{
+					Ability ability = abilities[i];
+					if (keyEvent.Keycode == Key.Key1 + i && !ability.onCooldown)
+					{
+						ability.OnUse(player);
+						ability.uses -= 1;
+						if (ability.uses < 1)
+						{
+							abilities.Remove(ability);
+						}
+						ability.TriggerCooldown();
+					}
+				}
 
 			}
 			if (keyEvent.Keycode == Key.Escape && keyEvent.Pressed)
@@ -381,7 +365,7 @@ public class PlayerController
 		{
 			if (thisAbility.uniqueName == toAdd.uniqueName)
 			{
-				thisAbility.Uses++;
+				thisAbility.uses++;
 				return;
 			}
 		}
